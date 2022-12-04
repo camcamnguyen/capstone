@@ -1,0 +1,2 @@
+# capstone
+Golang discord bot
