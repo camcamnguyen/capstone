@@ -37,10 +37,10 @@ func getCurrentWeather(message string) *discordgo.MessageSend {
 		}
 	}
 
-	weatherURL := fmt.Sprintf("%szip=%s&units=imperial&appid=%s", URL, zip, OpenWeatherToken)
+	weatherURL := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?zip=%s&units=imperial&appid=a5c2fd3b3e84d3caf4fa23b8cfded36e", zip)
 
 	// Create new HTTP client & set timeout
-	//client := http.Client{Timeout: 5 * time.Second}
+	client := &http.Client{Timeout: 5 * time.Second}
 
 	// Query OpenWeather API
 	response, err := http.Get(weatherURL)
