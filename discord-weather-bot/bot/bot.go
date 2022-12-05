@@ -41,7 +41,7 @@ func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	switch{
 	case strings.Contains(message.Content, "weather"):
 		discord.ChannelMessageSend(message.ChannelID, "I can help with that! Use '!zip <zip code>'")
-	case strings.Contains(message.Content, "bot"):
+	case strings.Contains(message.Content, "gopher"):
 		discord.ChannelMessageSend(message.ChannelID, "Hello there")
 	case strings.Contains(message.Content, "!zip"):
 		currentWeather := getCurrentWeather(message.Content)
