@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
-	//"time"
+	"time"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -27,7 +27,7 @@ type WeatherData struct {
 	Name string `json:"name"`
 }
 
-func getCurrentWeather(message string) *discordgo.MessageSend {
+func getCurrentWeather(message string) *discordgo.MessageSend { 
 	r, _ := regexp.Compile(`\d{5}`) //regular expression for zipcode
 	zip := r.FindString(message)
 
@@ -37,18 +37,20 @@ func getCurrentWeather(message string) *discordgo.MessageSend {
 		}
 	}
 
-	weatherURL := fmt.Sprintf("%szip=%s&units=imperial&appid=%s", URL, zip, OpenWeatherToken)
+	weatherURL := fmt.Sprintf("https://api.openweathermap.org/data/2.5/weather?zip=%s&units=imperial&appid=a5c2fd3b3e84d3caf4fa23b8cfded36e", zip)
 
 	// Create new HTTP client & set timeout
-	//client := http.Client{Timeout: 5 * time.Second}
+	client := &http.Client{Timeout: 5 * time.Second}
 
 	// Query OpenWeather API
-	response, err := http.Get(weatherURL)
+	//"https://api.openweathermap.org/data/2.5/weather?zip=91016&units=imperial&appid=a5c2fd3b3e84d3caf4fa23b8cfded36e"
+	response, err := client.Get(weatherURL)
 	if err != nil {
 		fmt.Println(URL)
 		fmt.Println(zip)
 		fmt.Println(OpenWeatherToken)
 		fmt.Println(weatherURL)
+		fmt.Println(response)
 		return &discordgo.MessageSend{
 			Content: "Sorry, there was an error trying to get the weather",
 		}
@@ -99,4 +101,9 @@ func getCurrentWeather(message string) *discordgo.MessageSend {
 	}
 
 	return embed
+
+	// fmt.Println(response)
+	// return &discordgo.MessageSend{
+	// 	Content: "executed all functions",
+	// }
 }
