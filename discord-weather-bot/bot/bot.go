@@ -5,13 +5,15 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"regexp"
 	"strings"
+
 	"github.com/bwmarrin/discordgo"
 )
 
-var(
+var (
 	OpenWeatherToken string //exported variables - notice the uppercase letters
-	BotToken string
+	BotToken         string
 )
 
 func Run() {
@@ -30,7 +32,7 @@ func Run() {
 	fmt.Println("Bot running... ")
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
-	<- c
+	<-c
 }
 
 func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
@@ -38,7 +40,7 @@ func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		return
 	}
 
-	switch{
+	switch {
 	case strings.Contains(message.Content, "weather"):
 		discord.ChannelMessageSend(message.ChannelID, "I can help with that! Use '!zip <zip code>'")
 	case strings.Contains(message.Content, "gopher"):
@@ -48,6 +50,10 @@ func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		discord.ChannelMessageSendComplex(message.ChannelID, currentWeather)
 	case strings.Contains(message.Content, "!reminders"):
 		reminders := getReminders(message.Content, message.Author)
+		// fmt.Printf(reminders.Content)
+		// if reminders == nil {
+		// 	discord.ChannelMessageSend(message.ChannelID, "No Reminders! Enjoy your day")
+		// }
 		discord.ChannelMessageSendComplex(message.ChannelID, reminders)
 	case strings.Contains(message.Content, "!addreminder "):
 		setReminder(message.Content, message.Author)
@@ -55,9 +61,23 @@ func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
 		reminders := getReminders(message.Content, message.Author)
 		discord.ChannelMessageSendComplex(message.ChannelID, reminders)
 	case strings.Contains(message.Content, "!remindme "):
-		// time := 30
-		// units := "seconds"
-		setTimedReminder(message.Content, message.Author)
-		discord.ChannelMessageSend(message.ChannelID, "Reminder saved")
+		r, _ := regexp.Compile("[0-9]+")
+		timer := r.FindString(message.Content)
+		messageString := string(message.Content)
+		var units = ""
+		if strings.Contains(messageString, "seconds") {
+			units = "seconds"
+		} else if strings.Contains(messageString, "minutes") {
+			units = "minutes"
+		} else if strings.Contains(messageString, "hours") {
+			units = "hours"
+		}
+		discord.ChannelMessageSend(message.ChannelID, "Reminding you in "+timer+" "+units)
+		setTimedReminder(message.Content, timer, units)
+		reminders := getReminders(message.Content, message.Author)
+		discord.ChannelMessageSendComplex(message.ChannelID, reminders)
+	case strings.Contains(message.Content, "!clear"):
+		clearReminder(message.Author)
+		discord.ChannelMessageSend(message.ChannelID, "Reminders cleared	")
 	}
 }
