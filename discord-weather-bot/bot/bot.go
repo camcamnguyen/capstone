@@ -46,8 +46,11 @@ func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	case strings.Contains(message.Content, "!zip"):
 		currentWeather := getCurrentWeather(message.Content)
 		discord.ChannelMessageSendComplex(message.ChannelID, currentWeather)
-	case strings.Contains(message.Content, "reminder"):
-		reminders := getReminders(message.Content)
+	case strings.Contains(message.Content, "!reminders"):
+		reminders := getReminders(message.Content, message.Author)
 		discord.ChannelMessageSendComplex(message.ChannelID, reminders)
+	case strings.Contains(message.Content, "!remindme "):
+		setReminder(message.Content, message.Author)
+		discord.ChannelMessageSend(message.ChannelID, "Reminder saved")
 	}
 }
