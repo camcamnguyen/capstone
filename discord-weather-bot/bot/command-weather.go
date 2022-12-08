@@ -101,9 +101,4 @@ func getCurrentWeather(message string) *discordgo.MessageSend {
 	}
 
 	return embed
-
-	// fmt.Println(response)
-	// return &discordgo.MessageSend{
-	// 	Content: "executed all functions",
-	// }
 }

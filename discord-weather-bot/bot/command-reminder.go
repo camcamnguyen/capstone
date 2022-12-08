@@ -1,20 +1,19 @@
 package bot
 
 import (
-	"fmt"
+	//"fmt"
+	//"os/signal"
+	//"strings"
 	"log"
 	"os"
-	//"os/signal"
 	"encoding/csv"
 	"io"
-	//"strings"
 	"github.com/bwmarrin/discordgo"
 )
 
 
 
 func getReminders(message string, author *discordgo.User) *discordgo.MessageSend {
-	//var all_reminders [10]string
 	var all_reminders string
 	path, err := os.Getwd()
 	
@@ -35,9 +34,6 @@ func getReminders(message string, author *discordgo.User) *discordgo.MessageSend
             log.Fatal(err)
         }
         for value := range record {
-            //fmt.Printf("%s\n", record[value])
-			//store the values
-			//all_reminders[value] = record[value]
 			all_reminders += record[value] + "\n"
         }
     }
@@ -60,17 +56,12 @@ func getReminders(message string, author *discordgo.User) *discordgo.MessageSend
 
 }
 
-func setReminder(message string, author *discordgo.User) {
-	// r, _ := regexp.Compile(`\d{5}`) //regular expression for zipcode
-	// zip := r.FindString(message)
+func setReminder(message string, author *discordgo.User) {	
 	path, err := os.Getwd()
 
 	username := author.Username
 	path += "/bot/" + username + "reminders.csv"
-	//path += "/bot/reminders.csv"
-	//file, err := os.Open(path + "/bot/reminders.csv")
-	//file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, os.ModeAppend)
-	file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModeAppend)
+	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 
     if err != nil {
         log.Fatal(err)
@@ -82,6 +73,5 @@ func setReminder(message string, author *discordgo.User) {
 	data := []string{substring}
 	writer.Write(data)
 	writer.Flush()
-
-	fmt.Println(username)
+	file.Close()
 }
