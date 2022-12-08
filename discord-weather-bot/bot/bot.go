@@ -49,8 +49,15 @@ func newMessage(discord *discordgo.Session, message *discordgo.MessageCreate) {
 	case strings.Contains(message.Content, "!reminders"):
 		reminders := getReminders(message.Content, message.Author)
 		discord.ChannelMessageSendComplex(message.ChannelID, reminders)
-	case strings.Contains(message.Content, "!remindme "):
+	case strings.Contains(message.Content, "!addreminder "):
 		setReminder(message.Content, message.Author)
+		discord.ChannelMessageSend(message.ChannelID, "Reminder added")
+		reminders := getReminders(message.Content, message.Author)
+		discord.ChannelMessageSendComplex(message.ChannelID, reminders)
+	case strings.Contains(message.Content, "!remindme "):
+		// time := 30
+		// units := "seconds"
+		setTimedReminder(message.Content, message.Author)
 		discord.ChannelMessageSend(message.ChannelID, "Reminder saved")
 	}
 }

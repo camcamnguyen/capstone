@@ -1,9 +1,11 @@
 package bot
 
 import (
-	//"fmt"
+	"fmt"
 	//"os/signal"
 	//"strings"
+	//"time"
+	"regexp"
 	"log"
 	"os"
 	"encoding/csv"
@@ -59,7 +61,41 @@ func getReminders(message string, author *discordgo.User) *discordgo.MessageSend
 func setReminder(message string, author *discordgo.User) {	
 	path, err := os.Getwd()
 
+	//time.Sleep(8 * time.Second)
 	username := author.Username
+	path += "/bot/" + username + "reminders.csv"
+	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+
+    if err != nil {
+        log.Fatal(err)
+    }
+
+	writer := csv.NewWriter(file)
+	substring := message[13:len(message)]
+
+	data := []string{substring}
+	writer.Write(data)
+	writer.Flush()
+	file.Close()
+}
+
+func setTimedReminder(message string, author *discordgo.User) {	
+	r, _ := regexp.Compile(`^(?:[0-9]+[A-Z])$`)
+	matches := r.FindStringSubmatch(message)
+	fmt.Println(matches)
+
+	
+	// if (units == "seconds") {
+	// 	time.Sleep(time.Duration(timer) * time.Second)
+	// }
+	// if (units == "minutes") {
+	// 	time.Sleep(time.Duration(timer) * time.Minute)
+	// }
+	// if (units == "hours") {
+	// 	time.Sleep(time.Duration(timer) * time.Hour)
+	// }
+	username := author.Username
+	path, err := os.Getwd()
 	path += "/bot/" + username + "reminders.csv"
 	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
 
